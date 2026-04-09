@@ -13,7 +13,7 @@ async function main() {
 }
 
 let initdb = async() => {
-    await Listing.deleteMany({})
+    // await Listing.deleteMany({})
     await Listing.insertMany(initData.data)
     console.log("data was initialized")
 } 
