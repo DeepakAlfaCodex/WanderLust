@@ -4,7 +4,8 @@ const path = require("path")
 const mongoose = require('mongoose');
 const Listing = require("./models/listing.js");
 const methodOverride = require("method-override");
-const ejsMate = require("ejs-mate")
+const ejsMate = require("ejs-mate");
+const wrapAsync = require("./utills/wrapAsync.js");
 
 
 
@@ -90,6 +91,10 @@ app.delete("/listings/:id", async (req,res) => {
     let {id} = req.params;
     await Listing.findByIdAndDelete(id)
     res.redirect("/listings")
+})
+
+app.use((err, req, res, next) => {
+    res.send("something want wrong ");
 })
 
 app.listen(8080, () => {
