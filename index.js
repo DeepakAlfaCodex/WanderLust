@@ -6,6 +6,7 @@ const Listing = require("./models/listing.js");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utills/wrapAsync.js");
+const ExpressError = require("./utills/ExpressError.js");
 
 
 
@@ -93,8 +94,13 @@ app.delete("/listings/:id", async (req,res) => {
     res.redirect("/listings")
 })
 
+//agar koi route nhi milega tab
+app.all("/*splat", (req, res, next) => {
+    next(new ExpressError(404, "page not found !"));
+})
 app.use((err, req, res, next) => {
-    res.send("something want wrong ");
+    let {statusCode, message} = err;
+    res.status(statusCode).send(message);
 })
 
 app.listen(8080, () => {
