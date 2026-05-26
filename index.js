@@ -103,7 +103,7 @@ app.all("/*splat", (req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-    let {statusCode, message} = err;
+    let {statusCode = 500, message = "some thing want wrong"} = err;
     res.render("error.ejs", {message })
     res.status(statusCode || 500).json({message : err.message});
 })
