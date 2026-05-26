@@ -67,11 +67,14 @@ app.get("/listings/:id", async (req,res) => {
 })
 
 //create route
-app.post("/listings", async (req,res) => {
+app.post("/listings",wrapAsync( async (req,res) => {
+    if(!req.body.listing){
+        throw new ExpressError(400, "Send valid data for listing");
+    }
     const newListing= new Listing(req.body.listing);
     await newListing.save();
     res.redirect("/listings")
-})
+}))
 
 //edit route
 app.get("/listings/:id/edit", async (req,res) => {
@@ -98,11 +101,14 @@ app.delete("/listings/:id", async (req,res) => {
 app.all("/*splat", (req, res, next) => {
     next(new ExpressError(404, "page not found !"));
 })
+
 app.use((err, req, res, next) => {
     let {statusCode, message} = err;
-    res.status(statusCode).send(message);
+    res.render("error.ejs", {message })
+    res.status(statusCode || 500).json({message : err.message});
 })
 
 app.listen(8080, () => {
     console.log('Server is running on port 8080');
 })
+
