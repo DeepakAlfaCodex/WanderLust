@@ -7,7 +7,7 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utills/wrapAsync.js");
 const ExpressError = require("./utills/ExpressError.js");
-
+const {listingSchema} = require("./schema.js")
 
 
 main().then((res) => {
@@ -33,6 +33,16 @@ app.get("/", (req, res) => {
     res.send("hello world from root node <br><br><br><a href='/listings'>All listings</a>");
 });
 
+const validateListing = (req,res,next) =>{
+    let {error} = listingSchema.validate(req.body);
+
+    if(error){
+        let errMsg = error.details.map((el) => el.message).join(",")
+        throw new ExpressError(400, errMsg);
+    }else{
+        next()
+    }
+}
 // app.get("/listing", async(req,res) => {
 
 //     let samplelisting = new Listing({
@@ -67,20 +77,9 @@ app.get("/listings/:id", wrapAsync( async (req,res) => {
 }))
 
 //create route
-app.post("/listings", wrapAsync( async (req,res) => {
-    if(!req.body.listing){
-        throw new ExpressError(400, "Send valid data for listing");
-    }
+app.post("/listings", validateListing, wrapAsync( async (req,res) => {
+    l
     const newListing= new Listing(req.body.listing);
-    if(!newListing.title){
-        throw new ExpressError(400, "Title is missing ")
-    }
-    if(!newListing.description){
-        throw new ExpressError(400, "Discription is missing ")
-    }
-    if(!newListing.country){
-        throw new ExpressError(400, "Country is missing ")
-    }
     await newListing.save();
     res.redirect("/listings")
 }))
@@ -93,10 +92,7 @@ app.get("/listings/:id/edit",wrapAsync( async (req,res) => {
 }))
 
 //update route
-app.put("/listings/:id", wrapAsync( async(req,res) => {
-    if(!req.body.listing){
-        throw new ExpressError(400, "Send valid data for listing");
-    }
+app.put("/listings/:id", validateListing, wrapAsync( async(req,res) => {
     let {id} = req.params;
     await Listing.findByIdAndUpdate(id, {...req.body.listing})
     res.redirect(`/listings/${id}`)
