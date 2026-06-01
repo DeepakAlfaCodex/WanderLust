@@ -1,4 +1,4 @@
-const Joi = require("joi"); //ye bahut imp hai
+const Joi = require("joi"); //ye bahut imp hai kyuki ise schema ko badiya kar deta hai
 
 module.exports.listingSchema = Joi.object({
     listing : Joi.object({
