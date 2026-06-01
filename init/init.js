@@ -19,4 +19,4 @@ let initdb = async() => {
     console.log("data was initialized")
 } 
 
-initdb()
+initdb();
