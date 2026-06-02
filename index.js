@@ -8,6 +8,7 @@ const ejsMate = require("ejs-mate");
 const wrapAsync = require("./utills/wrapAsync.js");
 const ExpressError = require("./utills/ExpressError.js");
 const { listingSchema } = require("./schema.js");
+const Review = require("./models/review.js");
 
 main()
   .then((res) => {
@@ -123,6 +124,21 @@ app.delete(
     res.redirect("/listings");
   }),
 );
+
+//Reviews
+//Post Rout
+app.post("/listings/:id/reviews", async (req,res) => {
+   let listing = await Listing.findById(req.params.id);
+   console.log(listing)
+   let newReview = new Review(req.body.Review);
+   listing.reviews.push(newReview);
+   await newReview.save()
+   await listing.save();
+
+   console.log("new review save ")
+   res.send("review saved ")
+})
+
 
 //agar koi route nhi milega tab
 app.all("/*splat", (req, res, next) => {
