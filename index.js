@@ -9,6 +9,7 @@ const wrapAsync = require("./utills/wrapAsync.js");
 const ExpressError = require("./utills/ExpressError.js");
 const { listingSchema } = require("./schema.js");
 const Review = require("./models/review.js");
+const { reviewSchema } = require("./schema.js")
 
 main()
   .then((res) => {
@@ -37,6 +38,15 @@ app.get("/", (req, res) => {
 
 const validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
+  if (error) {
+    let errMsg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, errMsg);
+  } else {
+    next();
+  }
+};
+const validateReview = (req, res, next) => {
+  let { error } = reviewSchema.validate(req.body);
   if (error) {
     let errMsg = error.details.map((el) => el.message).join(",");
     throw new ExpressError(400, errMsg);
@@ -127,17 +137,15 @@ app.delete(
 
 //Reviews
 //Post Rout
-app.post("/listings/:id/reviews", async (req,res) => {
+app.post("/listings/:id/reviews",validateReview, wrapAsync( async (req,res) => {
    let listing = await Listing.findById(req.params.id);
-   console.log(listing)
-   let newReview = new Review(req.body.Review);
+   let newReview = new Review(req.body.review);
    listing.reviews.push(newReview);
    await newReview.save()
    await listing.save();
+  res.redirect(`/listings/${listing._id}`);
 
-   console.log("new review save ")
-   res.send("review saved ")
-})
+}))
 
 
 //agar koi route nhi milega tab

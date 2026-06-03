@@ -1,4 +1,5 @@
 const Joi = require("joi"); //ye bahut imp hai kyuki ise schema ko badiya kar deta hai
+// const review = require("./models/review");
 
 module.exports.listingSchema = Joi.object({
     listing : Joi.object({
@@ -10,3 +11,10 @@ module.exports.listingSchema = Joi.object({
         image : Joi.string().allow("", null)
     }).required()
 });
+
+module.exports.reviewSchema = Joi.object({
+    review: Joi.object({
+        rating: Joi.number().required(),
+        comment: Joi.string().required()
+    }).required()
+})
