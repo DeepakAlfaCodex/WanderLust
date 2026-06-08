@@ -7,9 +7,12 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 // const wrapAsync = require("./utills/wrapAsync.js");
 const ExpressError = require("./utills/ExpressError.js");
+const session = require("express-session");
+const flash = require("connect-flash");
 // const { listingSchema } = require("./schema.js");
 // const Review = require("./models/review.js");
 // const { reviewSchema } = require("./schema.js")
+
 
 const listings = require("./routes/listing.js")
 const reviews = require("./routes/review.js")
@@ -32,12 +35,31 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 
+const sessionOptions = {
+  secret: "mysupersceretcode",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge:  7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  }
+}
+
 app.get("/", (req, res) => {
   res.send(
     "hello world from root node <br><br><br><a href='/listings'>All listings</a>",
   );
 });
 
+app.use(session(sessionOptions));
+app.use(flash());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
+})
 
 // app.get("/listing", async(req,res) => {
 
