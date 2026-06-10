@@ -2,20 +2,20 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const mongoose = require("mongoose");
-// const Listing = require("./models/listing.js");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-// const wrapAsync = require("./utills/wrapAsync.js");
 const ExpressError = require("./utills/ExpressError.js");
 const session = require("express-session");
 const flash = require("connect-flash");
-// const { listingSchema } = require("./schema.js");
-// const Review = require("./models/review.js");
-// const { reviewSchema } = require("./schema.js")
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const User = require("./models/user.js");
 
 
-const listings = require("./routes/listing.js")
-const reviews = require("./routes/review.js")
+const listingRouter = require("./routes/listing.js")
+const reviewRouter = require("./routes/review.js")
+const userRouter = require("./routes/user.js");
+
 main()
   .then((res) => {
     console.log("connection successful");
@@ -55,11 +55,30 @@ app.get("/", (req, res) => {
 app.use(session(sessionOptions));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
-})
+});
+
+// app.get("/demouser", async (req, res) => {
+//   let fakeuser = new User({
+//     username: "delta student",
+//     email: "demo@example.com"
+//   });
+  
+//   let registeredUser = await User.register(fakeuser, "deltapassword");
+//   console.log(registeredUser);
+//   res.send("demo user created successfully");
+  
+// });
 
 // app.get("/listing", async(req,res) => {
 
@@ -75,8 +94,9 @@ app.use((req, res, next) => {
 //     res.send("Succefull testing")
 // })
 
-app.use("/listings", listings);
-app.use("/listings/:id/reviews", reviews);
+app.use("/listings", listingRouter);
+app.use("/listings/:id/reviews", reviewRouter);
+app.use("/", userRouter);
 
 
 //agar koi route nhi milega tab
