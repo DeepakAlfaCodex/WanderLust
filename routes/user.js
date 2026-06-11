@@ -31,13 +31,28 @@ router.post(
       const { username, email, password } = req.body;
       const user = new User({ username, email });
       const registeredUser = await User.register(user, password);
-      req.flash("success", "Welcome to Wanderlust");
-      res.redirect("/listings");
+      req.login(registeredUser, (err) => {
+        if (err) {
+          return next(err);
+        }
+        req.flash("success", "Welcome to Wanderlust");
+        res.redirect("/listings");
+      });
     } catch (e) {
       req.flash("error", e.message);
       res.redirect("/signup");
     }
   }),
 );
+
+router.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    req.flash("success", "You logged out successfully");
+    res.redirect("/listings");
+  });
+});
 
 module.exports = router;
