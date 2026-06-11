@@ -12,11 +12,14 @@ async function main() {
     await mongoose.connect('mongodb://127.0.0.1:27017/wanderlust');
 }
 
+const initDB = async () => {
+    await Listing.deleteMany({});
+    initData.data = initData.data.map((obj) => ({
+        ...obj,
+        owner: '6a292634fe0f1929b45cb011',
+    }));
+    await Listing.insertMany(initData.data);
+    console.log("DB initialized successfully");
+}
 
-let initdb = async() => {
-    // await Listing.deleteMany({})
-    await Listing.insertMany(initData.data)
-    console.log("data was initialized")
-} 
-
-initdb();
+initDB();
