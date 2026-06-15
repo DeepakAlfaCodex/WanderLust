@@ -8,7 +8,7 @@
         </div>
 
         <!-- Listing Card -->
-        <div class="card col-6 offset-3">
+        <div class="card col-6 offset-3 listing-card">
             <img src="<%=listing.image%>" class="card-img-top show-img" alt="...">
             <div class="card-body">
                 <p class="card-text">Owned by
@@ -23,18 +23,22 @@
         </div>
 
         <!-- Action Buttons -->
+         <% if (currUser && listing.owner._id.equals(currUser._id)) { %>
             <div class="btns mb-4 col-6 offset-3 d-flex gap-2">
             <a href="/listings/<%= listing._id%>/edit" class="btn btn-dark edit-btn">Edit</a>
             <form method="POST" action="/listings/<%=listing._id%>?_method=DELETE">
                 <button class="btn btn-dark">Delete</button>
             </form>
         </div>
+         <% } %>
+            
         
 
         <!-- Review Section -->
         <div class="col-8 offset-3 mb-3">
             <hr>
             <h4>Leave a review</h4>
+            <% if (currUser) { %>
             <form action="/listings/<%=listing._id %>/reviews" method="POST" novalidate class="needs-validation">
                 <div class="mb-3">
                     <label for="rating" class="form-label">Rating</label>
@@ -53,14 +57,14 @@
                 <br>
                 <button class="btn btn-outline-dark">Submit</button>
             </form>
-            <hr>
+            <% } %>
             <p><b>All Reviews</b></p>
             <ul>
                 <div class="row">
                      <% for ( review of listing.reviews) { %> 
-                <div class="card col-5 ms-2 mb-4">
+                <div class="card col-5 ms-2 mb-4 p-2">
                     <div class="card-body">
-                        <h5 class="card-title">Dipendra</5>
+                        <h5 class="card-title"><%= review.author.username %></h5>
                         <p class="card-text mt-2"><%= review.comment %></p>
                         <p class="card-text"><%= review.rating %> stars</p>
                         <form action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE" method="POST">
