@@ -79,18 +79,17 @@ body {
 }
 
 .listing-link {
-    text-decoration: none;
+  text-decoration: none;
 }
-
 
 /* card effect */
 .card-img-overlay {
-    opacity: 0;
+  opacity: 0;
 }
 
 .card-img-overlay:hover {
-    opacity: 0.2;
-    background-color: white;
+  opacity: 0.2;
+  background-color: white;
 }
 
 .add-btn {
@@ -110,4 +109,12 @@ body {
 
 .show-img {
   height: 30vh;
+}
+
+/* Map */
+
+#map {
+  height: 380px;
+  width: 100vh;
+  margin-bottom: 20px;
 }
