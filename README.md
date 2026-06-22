@@ -3,7 +3,7 @@
 WanderLust is a comprehensive vacation rental platform built using **Node.js, Express, React, and MongoDB**. It allows users to explore unique stays, manage listings, and experience a seamless booking flow.
 
 ## 🔗 Live Demo
-Check out the live website here: [WanderLust Live Website](https://tumhari-render-link-yahan-daalo.onrender.com)
+Check out the live website here: [WanderLust Live Website](https://wanderlust-0n2a.onrender.com/listings)
 
 ---
 
