@@ -1,6 +1,6 @@
-if(process.env.NODE_ENV != "production") {
-  require('dotenv').config();
-console.log(process.env.SECRET);
+if (process.env.NODE_ENV != "production") {
+  require("dotenv").config();
+  console.log(process.env.SECRET);
 }
 
 const express = require("express");
@@ -11,15 +11,17 @@ const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utills/ExpressError.js");
 const session = require("express-session");
+const { MongoStore } = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
-
-const listingRouter = require("./routes/listing.js")
-const reviewRouter = require("./routes/review.js")
+const listingRouter = require("./routes/listing.js");
+const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
+
+const dbUrl = process.env.ATLASDB_URL;
 
 main()
   .then((res) => {
@@ -30,7 +32,7 @@ main()
   });
 
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/wanderlust");
+  await mongoose.connect(dbUrl);
 }
 
 app.set("view engine", "ejs");
@@ -40,22 +42,38 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret: "mysupersceretcode",
+  },
+  touchAfter: 24 * 3600,
+});
+
+
+store.on("error", () => {
+  console.log("ERROR IN MONGO SESSION STORE", err);
+})
+
 const sessionOptions = {
+  store,
   secret: "mysupersceretcode",
   resave: false,
   saveUninitialized: true,
   cookie: {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
-    maxAge:  7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
     httpOnly: true,
-  }
-}
+  },
+};
 
-app.get("/", (req, res) => {
-  res.send(
-    "hello world from root node <br><br><br><a href='/listings'>All listings</a>",
-  );
-});
+// app.get("/", (req, res) => {
+//   res.send(
+//     "hello world from root node <br><br><br><a href='/listings'>All listings</a>",
+//   );
+// });
+
+
 
 app.use(session(sessionOptions));
 app.use(flash());
@@ -79,11 +97,11 @@ app.use((req, res, next) => {
 //     username: "delta student",
 //     email: "demo@example.com"
 //   });
-  
+
 //   let registeredUser = await User.register(fakeuser, "deltapassword");
 //   console.log(registeredUser);
 //   res.send("demo user created successfully");
-  
+
 // });
 
 // app.get("/listing", async(req,res) => {
@@ -103,7 +121,6 @@ app.use((req, res, next) => {
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
-
 
 //agar koi route nhi milega tab
 app.all("/*splat", (req, res, next) => {
