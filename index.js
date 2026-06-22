@@ -67,11 +67,11 @@ const sessionOptions = {
   },
 };
 
-// app.get("/", (req, res) => {
-//   res.send(
-//     "hello world from root node <br><br><br><a href='/listings'>All listings</a>",
-//   );
-// });
+app.get("/", (req, res) => {
+  res.send(
+    "hello world from root node <br><br><br><a href='/listings'>All listings</a>",
+  );
+});
 
 
 
